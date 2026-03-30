@@ -1,6 +1,7 @@
 import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import ContactPage from "./pages/ContactPage";
 import DrugResistancePage from "./pages/DrugResistancePage";
 import HomePage from "./pages/HomePage";
 import PatientPage from "./pages/PatientPage";
@@ -38,10 +39,16 @@ const resistanceRoute = createRoute({
   path: "/resistance",
   component: DrugResistancePage,
 });
+const contactRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/contact",
+  component: ContactPage,
+});
 
 export const routeTree = rootRoute.addChildren([
   homeRoute,
   patientRoute,
   questionnaireRoute,
   resistanceRoute,
+  contactRoute,
 ]);

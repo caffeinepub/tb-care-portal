@@ -6,6 +6,7 @@ const navLinks = [
   { label: "Patient Entry", href: "/patient" },
   { label: "Questionnaire", href: "/questionnaire" },
   { label: "Drug Resistance Info", href: "/resistance" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {

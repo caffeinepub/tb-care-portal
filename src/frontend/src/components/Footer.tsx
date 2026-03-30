@@ -6,6 +6,7 @@ const quickLinks = [
   { label: "Patient Entry", href: "/patient" },
   { label: "Questionnaire", href: "/questionnaire" },
   { label: "Drug Resistance Info", href: "/resistance" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Footer() {
@@ -59,9 +60,10 @@ export default function Footer() {
             className="space-y-2 text-sm"
             style={{ color: "oklch(0.75 0.02 220)" }}
           >
-            <li>📧 support@tbcareportal.health</li>
-            <li>📞 +1 (800) TB-CARE</li>
-            <li>📍 Health Services Division</li>
+            <li>👤 Sonu Kumar</li>
+            <li>📧 sonuamikumar@gmail.com</li>
+            <li>📞 +91 8290317570</li>
+            <li>📍 GT Road, Ghall Kalan, Moga, Punjab, India</li>
           </ul>
         </div>
       </div>
