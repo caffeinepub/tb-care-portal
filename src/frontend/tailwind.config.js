@@ -16,7 +16,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ["Plus Jakarta Sans", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
         border: "oklch(var(--border))",
@@ -76,8 +77,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
-        card: "0 2px 12px 0 rgba(31,111,181,0.08)",
+        card: "0 2px 12px 0 rgba(10,20,60,0.08)",
+        "card-hover": "0 8px 28px 0 rgba(10,20,60,0.14)",
       },
       keyframes: {
         "accordion-down": {

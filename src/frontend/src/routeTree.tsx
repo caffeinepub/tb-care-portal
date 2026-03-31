@@ -1,12 +1,9 @@
 import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-import AdminPage from "./pages/AdminPage";
-import ContactPage from "./pages/ContactPage";
-import DrugResistancePage from "./pages/DrugResistancePage";
+import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
-import PatientPage from "./pages/PatientPage";
-import QuestionnairePage from "./pages/QuestionnairePage";
+import ToolPage from "./pages/ToolPage";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -25,37 +22,21 @@ const homeRoute = createRoute({
   path: "/",
   component: HomePage,
 });
-const patientRoute = createRoute({
+
+const galleryRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/patient",
-  component: PatientPage,
+  path: "/gallery",
+  component: GalleryPage,
 });
-const questionnaireRoute = createRoute({
+
+const toolRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/questionnaire",
-  component: QuestionnairePage,
-});
-const resistanceRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/resistance",
-  component: DrugResistancePage,
-});
-const contactRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/contact",
-  component: ContactPage,
-});
-const adminRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/admin",
-  component: AdminPage,
+  path: "/tool/$toolId",
+  component: ToolPage,
 });
 
 export const routeTree = rootRoute.addChildren([
   homeRoute,
-  patientRoute,
-  questionnaireRoute,
-  resistanceRoute,
-  contactRoute,
-  adminRoute,
+  galleryRoute,
+  toolRoute,
 ]);

@@ -1,85 +1,83 @@
-import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
-
-const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "Patient Entry", href: "/patient" },
-  { label: "Questionnaire", href: "/questionnaire" },
-  { label: "Drug Resistance Info", href: "/resistance" },
-  { label: "Contact", href: "/contact" },
-];
+import { Github, Heart } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const caffeineUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`;
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname : "";
+  const caffeineUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`;
   return (
-    <footer
-      style={{ background: "oklch(0.18 0.02 220)" }}
-      className="text-white mt-16"
-    >
-      <div className="max-w-[1200px] mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <div className="flex items-center gap-2 font-bold text-xl mb-3">
-            <span>🩺</span>
-            <span>TB Care Portal</span>
+    <footer className="border-t border-border bg-card mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+          <div>
+            <div className="font-bold text-lg text-primary mb-2">
+              Hiplot (ORG)
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Cloud-based biomedical data visualization platform, supported and
+              maintained by the openbiox community.
+            </p>
           </div>
-          <p className="text-sm" style={{ color: "oklch(0.75 0.02 220)" }}>
-            Comprehensive care management for Tuberculosis patients. Empowering
-            healthcare providers with modern tools.
-          </p>
-        </div>
-        <div>
-          <h3
-            className="font-semibold mb-3 text-sm uppercase tracking-wider"
-            style={{ color: "oklch(0.75 0.02 220)" }}
-          >
-            Quick Links
-          </h3>
-          <ul className="space-y-2 text-sm">
-            {quickLinks.map((l) => (
-              <li key={l.href}>
-                <Link
-                  to={l.href}
-                  className="hover:text-white transition-colors"
-                  style={{ color: "oklch(0.75 0.02 220)" }}
-                >
-                  {l.label}
-                </Link>
+          <div>
+            <div className="font-semibold text-sm text-foreground mb-2">
+              Resources
+            </div>
+            <ul className="space-y-1">
+              <li>
+                <span className="text-sm text-muted-foreground cursor-default">
+                  Documentation
+                </span>
               </li>
-            ))}
-          </ul>
+              <li>
+                <span className="text-sm text-muted-foreground cursor-default">
+                  API Reference
+                </span>
+              </li>
+              <li>
+                <span className="text-sm text-muted-foreground cursor-default">
+                  Changelog
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold text-sm text-foreground mb-2">
+              Community
+            </div>
+            <ul className="space-y-1">
+              <li>
+                <a
+                  href="https://github.com/openbiox"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                >
+                  <Github className="w-3.5 h-3.5" /> GitHub
+                </a>
+              </li>
+              <li>
+                <span className="text-sm text-muted-foreground cursor-default">
+                  openbiox Community
+                </span>
+              </li>
+              <li>
+                <span className="text-sm text-muted-foreground cursor-default">
+                  Contribute
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <h3
-            className="font-semibold mb-3 text-sm uppercase tracking-wider"
-            style={{ color: "oklch(0.75 0.02 220)" }}
-          >
-            Contact
-          </h3>
-          <ul
-            className="space-y-2 text-sm"
-            style={{ color: "oklch(0.75 0.02 220)" }}
-          >
-            <li>👤 Sonu Kumar</li>
-            <li>📧 sonuamikumar@gmail.com</li>
-            <li>📞 +91 8290317570</li>
-            <li>📍 GT Road, Ghall Kalan, Moga, Punjab, India</li>
-          </ul>
-        </div>
-      </div>
-      <div className="border-t" style={{ borderColor: "oklch(0.28 0.02 220)" }}>
-        <div
-          className="max-w-[1200px] mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm"
-          style={{ color: "oklch(0.65 0.02 220)" }}
-        >
-          <span>© {year} TB Care Portal. All rights reserved.</span>
+        <div className="border-t border-border pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>© {year} Hiplot (ORG). Open source, community maintained.</span>
           <span className="flex items-center gap-1">
-            Built with <Heart className="w-3.5 h-3.5 text-red-400" /> using{" "}
+            Built with <Heart className="w-3 h-3 text-red-400 fill-red-400" />{" "}
+            using{" "}
             <a
               href={caffeineUrl}
               target="_blank"
-              rel="noreferrer"
-              className="hover:text-white underline"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
             >
               caffeine.ai
             </a>

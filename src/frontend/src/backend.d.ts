@@ -46,6 +46,7 @@ export interface Patient {
     frequency: string;
 }
 export interface backendInterface {
+    _initializeAccessControlWithSecret(secret: string): Promise<void>;
     addPatient(name: string, age: bigint, drugName: string, frequency: string): Promise<void>;
     addResponse(patientName: string, missedDose: boolean, sideEffects: string): Promise<void>;
     addKAPResponse(
