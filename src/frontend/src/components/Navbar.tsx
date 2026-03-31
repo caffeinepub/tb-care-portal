@@ -1,19 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "@tanstack/react-router";
-import { Dna, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import {
+  BarChart2,
+  Dna,
+  LogOut,
+  Menu,
+  Moon,
+  Search,
+  Sun,
+  User,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
-  { to: "/gallery", label: "Gallery" },
+  { to: "/gallery", label: "Questionnaires" },
+  { to: "/spss", label: "Graph Builder" },
+  { to: "/results", label: "Results" },
+  { to: "/admin", label: "Admin" },
 ];
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { loginStatus, identity, clear } = useInternetIdentity();
+  const isLoggedIn = loginStatus === "success" && !!identity;
 
   return (
     <header className="sticky top-0 z-50 bg-card/80 backdrop-blur border-b border-border">
@@ -27,9 +44,9 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
             <Dna className="w-5 h-5 text-primary" />
           </div>
-          <span>Hiplot</span>
+          <span>TB Questionnaire</span>
           <span className="text-xs font-normal text-muted-foreground hidden sm:inline">
-            (ORG)
+            Portal
           </span>
         </Link>
 
@@ -74,13 +91,39 @@ export default function Navbar() {
               <Moon className="w-4 h-4" />
             )}
           </Button>
-          <Link to="/gallery" className="hidden sm:block">
+
+          {isLoggedIn ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-sm gap-1.5 hidden sm:flex"
+              onClick={() => clear()}
+              data-ocid="nav.secondary_button"
+            >
+              <User className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-sm hidden sm:flex"
+              onClick={() => navigate({ to: "/login" })}
+              data-ocid="nav.secondary_button"
+            >
+              Login
+            </Button>
+          )}
+
+          <Link to="/spss" className="hidden sm:block">
             <Button
               size="sm"
-              className="h-8 text-sm"
+              className="h-8 text-sm gap-1.5"
               data-ocid="nav.primary_button"
             >
-              Explore Tools
+              <BarChart2 className="w-3.5 h-3.5" />
+              Graph Builder
             </Button>
           </Link>
           <Button
@@ -124,6 +167,30 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <div className="pt-2 border-t border-border mt-1">
+                {isLoggedIn ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clear();
+                      setMobileOpen(false);
+                    }}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    data-ocid="nav.secondary_button"
+                  >
+                    <LogOut className="w-4 h-4" /> Logout
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    data-ocid="nav.link"
+                  >
+                    <User className="w-4 h-4" /> Login
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

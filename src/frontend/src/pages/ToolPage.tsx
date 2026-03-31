@@ -16,12 +16,13 @@ import { computeStats, parseCsvFull } from "@/lib/stats";
 import { TOOLS } from "@/lib/tools";
 import { Link, useParams } from "@tanstack/react-router";
 import {
+  BarChart2,
   ChevronDown,
   ChevronRight,
   Copy,
   Download,
   FileText,
-  Play,
+  Image,
   RefreshCw,
   Upload,
 } from "lucide-react";
@@ -74,7 +75,7 @@ export default function ToolPage() {
     }
     setOutputCsv(csvDataRef.current);
     setOutputParams({ ...paramsRef.current });
-    toast.success("Visualization rendered!");
+    toast.success("Graph plotted!");
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -88,7 +89,7 @@ export default function ToolPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <div className="text-5xl">404</div>
-        <div className="text-xl font-semibold">Tool not found</div>
+        <div className="text-xl font-semibold">Questionnaire not found</div>
         <Link to="/gallery">
           <Button>Back to Gallery</Button>
         </Link>
@@ -123,7 +124,7 @@ export default function ToolPage() {
   function handleDownloadSvg() {
     const svg = chartContainerRef.current?.querySelector("svg");
     if (!svg) {
-      toast.error("No chart SVG found. Run the visualization first.");
+      toast.error("No chart found. Start the questionnaire first.");
       return;
     }
     const serialized = new XMLSerializer().serializeToString(svg);
@@ -135,6 +136,45 @@ export default function ToolPage() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Chart downloaded as SVG");
+  }
+
+  async function handleDownloadPng() {
+    const container = chartContainerRef.current;
+    if (!container) {
+      toast.error("No chart to download");
+      return;
+    }
+    try {
+      const canvas = document.createElement("canvas");
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      const svgEl = container.querySelector("svg");
+      if (svgEl) {
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const img = new window.Image();
+        const blob = new Blob([svgData], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          const link = document.createElement("a");
+          link.download = `${tool?.id ?? toolId}-chart.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          toast.success("Chart downloaded as PNG");
+        };
+        img.src = url;
+      } else {
+        toast.error("No SVG chart found for PNG export");
+      }
+    } catch {
+      toast.error("PNG download failed");
+    }
   }
 
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -225,7 +265,7 @@ export default function ToolPage() {
               value={csvData}
               onChange={(e) => setCsvData(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="font-mono text-xs min-h-[160px] bg-sidebar-accent/50 border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/30 resize-none"
+              className="font-mono text-xs min-h-[160px] bg-white border-sidebar-border text-black placeholder:text-gray-400 resize-none"
               data-ocid="tool.textarea"
             />
           </div>
@@ -413,7 +453,7 @@ export default function ToolPage() {
               onClick={handleRun}
               data-ocid="tool.submit_button"
             >
-              <Play className="w-4 h-4" /> Run
+              <BarChart2 className="w-4 h-4" /> Plot Graph
             </Button>
           </div>
         </div>
@@ -442,6 +482,15 @@ export default function ToolPage() {
                 data-ocid="tool.secondary_button"
               >
                 <Download className="w-3 h-3" /> SVG
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs gap-1"
+                onClick={handleDownloadPng}
+                data-ocid="tool.secondary_button"
+              >
+                <Image className="w-3 h-3" /> PNG
               </Button>
             </div>
           )}
@@ -611,7 +660,7 @@ export default function ToolPage() {
               <div className="text-6xl opacity-40">{tool.icon}</div>
               <div className="text-center">
                 <div className="font-medium">
-                  Click Run to generate visualization
+                  Click Plot Graph to visualize your data
                 </div>
                 <div className="text-sm mt-1">
                   Load example data or paste your own CSV

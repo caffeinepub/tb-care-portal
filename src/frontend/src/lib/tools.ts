@@ -1,7 +1,7 @@
 export interface Tool {
   id: string;
   name: string;
-  category: "basic" | "statistical" | "clinical" | "omics" | "multi-omics";
+  category: "screening" | "assessment" | "clinical" | "research" | "advanced";
   description: string;
   usageCount: number;
   tags: string[];
@@ -14,11 +14,12 @@ export interface Tool {
 export const TOOLS: Tool[] = [
   {
     id: "bar-chart",
-    name: "Bar Chart",
-    category: "basic",
-    description: "Compare categorical data with vertical or horizontal bars.",
+    name: "KAP Knowledge Assessment",
+    category: "screening",
+    description:
+      "Assess TB knowledge levels across patient groups with structured scoring.",
     usageCount: 48200,
-    tags: ["bar", "comparison", "categorical"],
+    tags: ["KAP", "knowledge", "screening", "questionnaire"],
     icon: "📊",
     color: "bg-blue-500",
     exampleCsv:
@@ -27,11 +28,11 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "line-chart",
-    name: "Line Chart",
-    category: "basic",
-    description: "Visualize trends and changes over continuous data.",
+    name: "Treatment Adherence Tracker",
+    category: "screening",
+    description: "Track patient adherence to TB treatment protocols over time.",
     usageCount: 36700,
-    tags: ["line", "trend", "time-series"],
+    tags: ["adherence", "treatment", "monitoring", "DOT"],
     icon: "📈",
     color: "bg-teal-500",
     exampleCsv:
@@ -40,11 +41,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "scatter-plot",
-    name: "Scatter Plot",
-    category: "basic",
-    description: "Explore correlations between two continuous variables.",
+    name: "Symptom Screening Form",
+    category: "screening",
+    description:
+      "Screen patients for TB symptoms including cough, fever, and weight loss.",
     usageCount: 29400,
-    tags: ["scatter", "correlation", "bivariate"],
+    tags: ["symptoms", "screening", "cough", "fever"],
     icon: "🔵",
     color: "bg-indigo-500",
     exampleCsv:
@@ -53,11 +55,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "box-plot",
-    name: "Box Plot",
-    category: "statistical",
-    description: "Display data distribution with quartiles and outliers.",
+    name: "Drug Resistance Questionnaire",
+    category: "assessment",
+    description:
+      "Evaluate drug resistance patterns and treatment history distributions.",
     usageCount: 22100,
-    tags: ["box", "distribution", "quartile"],
+    tags: ["drug-resistance", "MDR", "assessment", "treatment"],
     icon: "📦",
     color: "bg-purple-500",
     exampleCsv:
@@ -66,11 +69,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "heatmap",
-    name: "Heatmap",
-    category: "omics",
-    description: "Visualize matrix data with color intensity encoding.",
+    name: "Contact Tracing Survey",
+    category: "research",
+    description:
+      "Map contact exposure patterns with intensity-coded heatmap visualization.",
     usageCount: 31800,
-    tags: ["heatmap", "matrix", "expression"],
+    tags: ["contact-tracing", "exposure", "heatmap", "survey"],
     icon: "🌡️",
     color: "bg-orange-500",
     exampleCsv:
@@ -79,12 +83,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "volcano-plot",
-    name: "Volcano Plot",
-    category: "omics",
+    name: "Risk Factor Assessment",
+    category: "research",
     description:
-      "Identify differentially expressed genes with fold-change and significance.",
+      "Identify significant TB risk factors with fold-change and statistical significance.",
     usageCount: 27600,
-    tags: ["volcano", "DEG", "fold-change", "pvalue"],
+    tags: ["risk-factors", "significance", "assessment", "research"],
     icon: "🌋",
     color: "bg-red-500",
     exampleCsv:
@@ -93,11 +97,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "pie-chart",
-    name: "Pie Chart",
-    category: "basic",
-    description: "Show proportional composition of categorical data.",
+    name: "Patient Demographics Survey",
+    category: "screening",
+    description:
+      "Visualize proportional breakdown of patient demographics and TB types.",
     usageCount: 19500,
-    tags: ["pie", "proportion", "composition"],
+    tags: ["demographics", "patient", "proportion", "survey"],
     icon: "🥧",
     color: "bg-yellow-500",
     exampleCsv:
@@ -106,11 +111,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "histogram",
-    name: "Histogram",
-    category: "statistical",
-    description: "Display frequency distribution of continuous data.",
+    name: "Side Effects Monitoring",
+    category: "assessment",
+    description:
+      "Monitor and assess frequency distributions of TB drug side effects.",
     usageCount: 17800,
-    tags: ["histogram", "frequency", "distribution"],
+    tags: ["side-effects", "monitoring", "frequency", "drugs"],
     icon: "📉",
     color: "bg-green-500",
     exampleCsv:
@@ -119,12 +125,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "violin-plot",
-    name: "Violin Plot",
-    category: "statistical",
+    name: "Outcome Assessment",
+    category: "assessment",
     description:
-      "Combine box plot and kernel density for rich distribution view.",
+      "Compare treatment outcome distributions between patient cohorts.",
     usageCount: 12300,
-    tags: ["violin", "distribution", "density"],
+    tags: ["outcome", "comparison", "cohort", "assessment"],
     icon: "🎻",
     color: "bg-pink-500",
     exampleCsv:
@@ -133,11 +139,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "survival-curve",
-    name: "Survival Curve",
+    name: "TB Treatment Outcome",
     category: "clinical",
-    description: "Kaplan-Meier survival analysis with event-time data.",
+    description:
+      "Kaplan-Meier analysis of TB treatment success and survival outcomes.",
     usageCount: 15200,
-    tags: ["survival", "kaplan-meier", "clinical"],
+    tags: ["survival", "treatment-outcome", "kaplan-meier", "clinical"],
     icon: "💊",
     color: "bg-cyan-500",
     exampleCsv:
@@ -146,11 +153,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "pca-plot",
-    name: "PCA Plot",
-    category: "omics",
-    description: "Principal component analysis for dimensionality reduction.",
+    name: "Community Awareness Survey",
+    category: "research",
+    description:
+      "Analyze community TB awareness patterns with dimensionality reduction.",
     usageCount: 24100,
-    tags: ["PCA", "dimensionality", "omics"],
+    tags: ["community", "awareness", "PCA", "survey"],
     icon: "🔮",
     color: "bg-violet-500",
     exampleCsv:
@@ -159,11 +167,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "correlation-matrix",
-    name: "Correlation Matrix",
-    category: "statistical",
-    description: "Visualize pairwise correlations between multiple variables.",
+    name: "Co-morbidity Assessment",
+    category: "assessment",
+    description:
+      "Visualize pairwise correlations between TB co-morbidities and risk variables.",
     usageCount: 18900,
-    tags: ["correlation", "matrix", "statistics"],
+    tags: ["co-morbidity", "correlation", "assessment", "risk"],
     icon: "🔗",
     color: "bg-slate-500",
     exampleCsv:
@@ -172,12 +181,12 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "forest-plot",
-    name: "Forest Plot",
+    name: "Meta-Analysis Questionnaire",
     category: "clinical",
     description:
-      "Meta-analysis visualization showing effect sizes and confidence intervals.",
+      "Meta-analysis visualization of TB intervention effect sizes and confidence intervals.",
     usageCount: 9800,
-    tags: ["forest", "meta-analysis", "CI"],
+    tags: ["meta-analysis", "effect-size", "CI", "research"],
     icon: "🌲",
     color: "bg-emerald-600",
     exampleCsv:
@@ -186,47 +195,51 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "venn-diagram",
-    name: "Venn Diagram",
-    category: "omics",
-    description: "Show overlaps between multiple gene/protein sets.",
+    name: "Multi-Drug Resistance Screen",
+    category: "research",
+    description:
+      "Show overlaps between MDR-TB, XDR-TB, and treatment-resistant patient sets.",
     usageCount: 14300,
-    tags: ["venn", "overlap", "sets"],
+    tags: ["MDR", "XDR", "resistance", "screening"],
     icon: "⭕",
     color: "bg-rose-500",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv: "set,size\nA,100\nB,80\nC,60\nA,B,30\nA,C,20\nB,C,25\nA,B,C,10",
+    implemented: true,
   },
   {
     id: "manhattan-plot",
-    name: "Manhattan Plot",
-    category: "omics",
-    description: "Genome-wide association study (GWAS) visualization.",
+    name: "Genome Association Survey",
+    category: "research",
+    description:
+      "Genome-wide association study for TB susceptibility gene identification.",
     usageCount: 11700,
-    tags: ["manhattan", "GWAS", "genomics"],
+    tags: ["GWAS", "genomics", "susceptibility", "research"],
     icon: "🏙️",
     color: "bg-sky-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv:
+      "chromosome,position,pvalue\n1,100000,0.05\n1,200000,0.001\n1,300000,0.0000001\n2,150000,0.02\n2,250000,0.000001\n3,100000,0.8\n3,200000,0.00000001",
+    implemented: true,
   },
   {
     id: "upset-plot",
-    name: "UpSet Plot",
-    category: "multi-omics",
-    description: "Visualize complex set intersections for multi-omics data.",
+    name: "Multi-omics Questionnaire",
+    category: "advanced",
+    description:
+      "Visualize complex intersections across multi-omics TB datasets.",
     usageCount: 8200,
-    tags: ["upset", "sets", "intersection"],
+    tags: ["multi-omics", "intersection", "advanced", "research"],
     icon: "📐",
     color: "bg-amber-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv: "set,size\nA,100\nB,80\nC,60\nA,B,30\nA,C,20\nB,C,25\nA,B,C,10",
+    implemented: true,
   },
   {
     id: "waterfall-plot",
-    name: "Waterfall Plot",
+    name: "Patient Response Tracker",
     category: "clinical",
-    description: "Show individual patient responses in oncology trials.",
+    description: "Track individual patient responses to TB treatment regimens.",
     usageCount: 7600,
-    tags: ["waterfall", "oncology", "response"],
+    tags: ["patient-response", "treatment", "monitoring", "clinical"],
     icon: "💧",
     color: "bg-blue-600",
     exampleCsv:
@@ -235,38 +248,40 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "bubble-chart",
-    name: "Bubble Chart",
-    category: "basic",
+    name: "Comparative Study Form",
+    category: "screening",
     description:
-      "Three-dimensional data visualization using bubble size encoding.",
+      "Three-dimensional comparison of TB study variables across patient groups.",
     usageCount: 11200,
-    tags: ["bubble", "3D", "scatter"],
+    tags: ["comparative", "study", "groups", "screening"],
     icon: "🫧",
     color: "bg-teal-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv:
+      "x,y,size,group\n10,20,15,A\n25,35,30,B\n15,50,20,A\n40,10,45,B\n30,45,10,A",
+    implemented: true,
   },
   {
     id: "pathway-map",
-    name: "Pathway Map",
-    category: "multi-omics",
+    name: "Pathway Analysis Survey",
+    category: "advanced",
     description:
-      "Visualize biological pathway enrichment and gene interactions.",
+      "Visualize TB biological pathway enrichment and gene interaction networks.",
     usageCount: 19800,
-    tags: ["pathway", "enrichment", "KEGG"],
+    tags: ["pathway", "enrichment", "KEGG", "genomics"],
     icon: "🗺️",
     color: "bg-lime-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv:
+      "source,target,weight\nNode1,Node2,1\nNode1,Node3,2\nNode2,Node4,1\nNode3,Node4,3\nNode4,Node5,1\nNode2,Node5,2",
+    implemented: true,
   },
   {
     id: "roc-curve",
-    name: "ROC Curve",
+    name: "Diagnostic Accuracy Form",
     category: "clinical",
     description:
-      "Evaluate diagnostic test performance with receiver operating characteristic.",
+      "Evaluate TB diagnostic test performance with receiver operating characteristic analysis.",
     usageCount: 16400,
-    tags: ["ROC", "AUC", "diagnostic"],
+    tags: ["ROC", "AUC", "diagnostic", "accuracy"],
     icon: "📡",
     color: "bg-indigo-600",
     exampleCsv:
@@ -275,43 +290,44 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "circos-plot",
-    name: "Circos Plot",
-    category: "multi-omics",
+    name: "Genomic Structure Survey",
+    category: "advanced",
     description:
-      "Circular genome visualization for structural variants and rearrangements.",
+      "Circular genome visualization for TB genomic structural variants and rearrangements.",
     usageCount: 6900,
-    tags: ["circos", "genome", "structural"],
+    tags: ["circos", "genome", "structural", "advanced"],
     icon: "🔄",
     color: "bg-purple-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv: "from,to,value\nA,B,10\nA,C,5\nB,C,8\nB,D,3\nC,D,7\nD,A,4",
+    implemented: true,
   },
   {
     id: "dotplot",
-    name: "Dot Plot",
-    category: "omics",
+    name: "Gene Expression Survey",
+    category: "research",
     description:
-      "Visualize gene expression across cell types with size/color encoding.",
+      "Visualize TB gene expression across cell types with size and color encoding.",
     usageCount: 13500,
-    tags: ["dot", "scRNA", "expression"],
+    tags: ["gene-expression", "scRNA", "cell-types", "research"],
     icon: "🔴",
     color: "bg-red-600",
-    exampleCsv: "",
-    implemented: false,
+    exampleCsv:
+      "gene,condition,avg_exp,pct_exp\nGENE1,Control,0.5,20\nGENE1,Treatment,2.1,75\nGENE2,Control,1.2,45\nGENE2,Treatment,3.4,90\nGENE3,Control,0.1,5\nGENE3,Treatment,1.8,60",
+    implemented: true,
   },
 ];
 
 export const CATEGORIES = [
   { id: "all", label: "All", count: TOOLS.length },
   {
-    id: "basic",
-    label: "Basic",
-    count: TOOLS.filter((t) => t.category === "basic").length,
+    id: "screening",
+    label: "Screening",
+    count: TOOLS.filter((t) => t.category === "screening").length,
   },
   {
-    id: "statistical",
-    label: "Statistical",
-    count: TOOLS.filter((t) => t.category === "statistical").length,
+    id: "assessment",
+    label: "Assessment",
+    count: TOOLS.filter((t) => t.category === "assessment").length,
   },
   {
     id: "clinical",
@@ -319,44 +335,44 @@ export const CATEGORIES = [
     count: TOOLS.filter((t) => t.category === "clinical").length,
   },
   {
-    id: "omics",
-    label: "Omics",
-    count: TOOLS.filter((t) => t.category === "omics").length,
+    id: "research",
+    label: "Research",
+    count: TOOLS.filter((t) => t.category === "research").length,
   },
   {
-    id: "multi-omics",
-    label: "Multi-omics",
-    count: TOOLS.filter((t) => t.category === "multi-omics").length,
+    id: "advanced",
+    label: "Advanced",
+    count: TOOLS.filter((t) => t.category === "advanced").length,
   },
 ];
 
 export const HOME_CATEGORIES = [
   {
-    id: "basic",
-    label: "Basic Charts",
+    id: "screening",
+    label: "Screening Tools",
     icon: "📊",
-    count: TOOLS.filter((t) => t.category === "basic").length,
-    description: "Bar, line, scatter, pie",
+    count: TOOLS.filter((t) => t.category === "screening").length,
+    description: "KAP, symptom, contact tracing",
   },
   {
-    id: "statistical",
-    label: "Advanced Stats",
+    id: "assessment",
+    label: "Assessment Tools",
     icon: "📐",
-    count: TOOLS.filter((t) => t.category === "statistical").length,
-    description: "Box, violin, histogram",
+    count: TOOLS.filter((t) => t.category === "assessment").length,
+    description: "Drug resistance, adherence, risk",
   },
   {
     id: "clinical",
     label: "Clinical Tools",
     icon: "🏥",
     count: TOOLS.filter((t) => t.category === "clinical").length,
-    description: "Survival, ROC, forest",
+    description: "Treatment, outcome, diagnostic",
   },
   {
-    id: "omics",
-    label: "Omics Analysis",
+    id: "research",
+    label: "Research Tools",
     icon: "🧬",
-    count: TOOLS.filter((t) => t.category === "omics").length,
-    description: "Heatmap, volcano, PCA",
+    count: TOOLS.filter((t) => t.category === "research").length,
+    description: "Community, genome, pathway",
   },
 ];

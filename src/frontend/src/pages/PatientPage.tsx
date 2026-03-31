@@ -12,11 +12,74 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "@tanstack/react-router";
-import { Loader2, UserPlus, Users } from "lucide-react";
+import { ExternalLink, Loader2, UserPlus, Users } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAddPatient, useGetPatients } from "../hooks/useQueries";
+
+const externalResources = [
+  {
+    name: "UniProt",
+    url: "https://www.uniprot.org",
+    description: "Protein sequence & function database",
+    color: "#e8710a",
+  },
+  {
+    name: "NCBI GenBank",
+    url: "https://www.ncbi.nlm.nih.gov/genbank/",
+    description: "Genetic sequence database",
+    color: "#0071bc",
+  },
+  {
+    name: "NCBI PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov",
+    description: "Biomedical literature",
+    color: "#336699",
+  },
+  {
+    name: "WHO Global TB Data",
+    url: "https://www.who.int/teams/global-tuberculosis-programme/data",
+    description: "WHO TB statistics & reports",
+    color: "#009fda",
+  },
+  {
+    name: "Global Health Observatory",
+    url: "https://www.who.int/data/gho",
+    description: "WHO world health data",
+    color: "#00a896",
+  },
+  {
+    name: "NVIDIA BioNeMo",
+    url: "https://www.nvidia.com/en-us/clara/bionemo/",
+    description: "AI for drug discovery",
+    color: "#76b900",
+  },
+  {
+    name: "UCSC Genome Browser",
+    url: "https://genome.ucsc.edu",
+    description: "Human genome browser",
+    color: "#990000",
+  },
+  {
+    name: "Ensembl Genome",
+    url: "https://www.ensembl.org",
+    description: "Genome annotation & variants",
+    color: "#6b3fa0",
+  },
+  {
+    name: "World Bank Health Data",
+    url: "https://data.worldbank.org/topic/health",
+    description: "Global health indicators",
+    color: "#009ca7",
+  },
+  {
+    name: "ClinicalTrials.gov",
+    url: "https://clinicaltrials.gov",
+    description: "Clinical research trials",
+    color: "#c0392b",
+  },
+];
 
 export default function PatientPage() {
   const router = useRouter();
@@ -196,6 +259,55 @@ export default function PatientPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* External Data Resources */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-12"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <ExternalLink className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-bold text-foreground">
+              External Data Resources
+            </h2>
+          </div>
+          <p className="text-muted-foreground text-sm mb-6">
+            Access leading biomedical, genomic, and global health databases for
+            research and clinical reference.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {externalResources.map((res, i) => (
+              <a
+                key={res.name}
+                href={res.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-ocid={`resources.item.${i + 1}`}
+                className="group block rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className="mt-0.5 flex-shrink-0 w-3 h-3 rounded-full"
+                    style={{ backgroundColor: res.color }}
+                  />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1">
+                      <p className="font-semibold text-sm text-foreground leading-tight truncate">
+                        {res.name}
+                      </p>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                      {res.description}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );

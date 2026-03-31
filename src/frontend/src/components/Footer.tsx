@@ -1,4 +1,4 @@
-import { Github, Heart } from "lucide-react";
+import { Github, Heart, Mail } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -11,11 +11,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
           <div>
             <div className="font-bold text-lg text-primary mb-2">
-              Hiplot (ORG)
+              TB Questionnaire Portal
             </div>
             <p className="text-sm text-muted-foreground">
-              Cloud-based biomedical data visualization platform, supported and
-              maintained by the openbiox community.
+              Cloud-based TB care questionnaire platform for health
+              professionals and researchers.
             </p>
           </div>
           <div>
@@ -30,7 +30,7 @@ export default function Footer() {
               </li>
               <li>
                 <span className="text-sm text-muted-foreground cursor-default">
-                  API Reference
+                  Form Templates
                 </span>
               </li>
               <li>
@@ -56,20 +56,25 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <span className="text-sm text-muted-foreground cursor-default">
-                  openbiox Community
-                </span>
+                <a
+                  href="mailto:sonuamikumar@gmail.com"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                >
+                  <Mail className="w-3.5 h-3.5" /> sonuamikumar@gmail.com
+                </a>
               </li>
               <li>
                 <span className="text-sm text-muted-foreground cursor-default">
-                  Contribute
+                  TB Health Community
                 </span>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-border pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span>© {year} Hiplot (ORG). Open source, community maintained.</span>
+          <span>
+            © {year} TB Questionnaire Portal. Open source, community maintained.
+          </span>
           <span className="flex items-center gap-1">
             Built with <Heart className="w-3 h-3 text-red-400 fill-red-400" />{" "}
             using{" "}

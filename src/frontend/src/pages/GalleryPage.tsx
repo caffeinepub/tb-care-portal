@@ -25,10 +25,10 @@ export default function GalleryPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Visualization Gallery
+          Questionnaire Gallery
         </h1>
         <p className="text-muted-foreground">
-          Browse and launch 200+ biomedical visualization plugins
+          Browse and launch 20+ TB care questionnaire forms
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function GalleryPage() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Search tools by name or tag..."
+          placeholder="Search questionnaires by name or tag..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-9"
@@ -73,7 +73,9 @@ export default function GalleryPage() {
           data-ocid="gallery.empty_state"
         >
           <div className="text-4xl mb-3">🔍</div>
-          <div className="font-medium">No tools found for "{query}"</div>
+          <div className="font-medium">
+            No questionnaires found for "{query}"
+          </div>
           <div className="text-sm mt-1">
             Try a different search term or category
           </div>

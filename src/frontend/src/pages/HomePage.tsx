@@ -2,19 +2,11 @@ import ToolCard from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { HOME_CATEGORIES, TOOLS } from "@/lib/tools";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BarChart3,
-  Code2,
-  FlaskConical,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Code2, FlaskConical } from "lucide-react";
 import { motion } from "motion/react";
 
 const STATS = [
-  { icon: FlaskConical, label: "Plugins", value: "200+" },
-  { icon: Users, label: "Users", value: "50K+" },
-  { icon: BarChart3, label: "Visualizations", value: "10M+" },
+  { icon: FlaskConical, label: "Questionnaires", value: "20+" },
   { icon: Code2, label: "Open Source", value: "100%" },
 ];
 
@@ -40,17 +32,17 @@ export default function HomePage() {
           >
             <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-1.5 text-sm text-primary-foreground/80 mb-6">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              openbiox community powered
+              TB Health Professionals Platform
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Cloud-Based Biomedical
+              TB Care
               <br />
-              <span className="text-primary">Data Visualization</span>
+              <span className="text-primary">Questionnaire Management</span>
             </h1>
             <p className="text-lg text-sidebar-foreground/70 max-w-2xl mx-auto mb-8">
-              A comprehensive platform with 200+ visualization plugins for
-              genomics, clinical research, and statistical analysis — all
-              running in your browser.
+              A comprehensive platform with 20+ structured questionnaires for
+              tuberculosis management, patient screening, KAP assessment, and
+              treatment adherence monitoring.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <Link to="/gallery">
@@ -59,7 +51,7 @@ export default function HomePage() {
                   className="gap-2"
                   data-ocid="hero.primary_button"
                 >
-                  Explore Tools <ArrowRight className="w-4 h-4" />
+                  Browse Questionnaires <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/gallery">
@@ -69,7 +61,7 @@ export default function HomePage() {
                   className="border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent gap-2"
                   data-ocid="hero.secondary_button"
                 >
-                  View Gallery
+                  View All Forms
                 </Button>
               </Link>
             </div>
@@ -79,7 +71,7 @@ export default function HomePage() {
 
       {/* Stats bar */}
       <section className="border-b border-border bg-card">
-        <div className="max-w-5xl mx-auto px-4 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="max-w-5xl mx-auto px-4 py-6 grid grid-cols-2 gap-6">
           {STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -102,10 +94,10 @@ export default function HomePage() {
       <section className="py-14 px-4">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-foreground mb-2">
-            Visualization Categories
+            Questionnaire Categories
           </h2>
           <p className="text-muted-foreground mb-8">
-            Choose from specialized toolkits for your research domain
+            Choose from specialized questionnaire toolkits for TB management
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {HOME_CATEGORIES.map((cat, i) => (
@@ -125,7 +117,7 @@ export default function HomePage() {
                       {cat.description}
                     </div>
                     <div className="mt-3 text-xs font-medium text-primary">
-                      {cat.count} tools
+                      {cat.count} questionnaires
                     </div>
                   </div>
                 </Link>
@@ -135,16 +127,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Popular tools */}
+      {/* Popular questionnaires */}
       <section className="py-14 px-4 bg-muted/40">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-foreground">
-                Popular Tools
+                Popular Questionnaires
               </h2>
               <p className="text-muted-foreground mt-1">
-                Most-used visualization plugins
+                Most-used questionnaire forms for TB management
               </p>
             </div>
             <Link to="/gallery">

@@ -1345,6 +1345,991 @@ export function ForestPlotRenderer({ csv, params }: RendererProps) {
   );
 }
 
+function BubbleChartRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  const data = rows
+    .map((r) => ({
+      x: Number(r.x ?? r.X ?? 0),
+      y: Number(r.y ?? r.Y ?? 0),
+      size: Math.max(1, Number(r.size ?? r.Size ?? r.radius ?? 10)),
+      group: r.group ?? r.Group ?? r.label ?? "Data",
+    }))
+    .filter((d) => !Number.isNaN(d.x) && !Number.isNaN(d.y));
+  if (!data.length) return <EmptyChart />;
+  const groups = [...new Set(data.map((d) => d.group))];
+  const maxSize = Math.max(...data.map((d) => d.size));
+  return (
+    <div style={{ background: "white", padding: "16px", borderRadius: "8px" }}>
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <ResponsiveContainer width="100%" height={380}>
+        <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 40 }}>
+          <CartesianGrid stroke="#e2e8f0" />
+          <XAxis
+            dataKey="x"
+            name={params.xLabel || "X"}
+            label={{
+              value: params.xLabel || "X",
+              position: "insideBottom",
+              offset: -10,
+              fontSize: 12,
+            }}
+            fontSize={12}
+          />
+          <YAxis
+            dataKey="y"
+            name={params.yLabel || "Y"}
+            label={{
+              value: params.yLabel || "Y",
+              angle: -90,
+              position: "insideLeft",
+              fontSize: 12,
+            }}
+            fontSize={12}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "#fff",
+              border: "1px solid #e2e8f0",
+              borderRadius: "6px",
+              fontSize: "12px",
+            }}
+            content={({ payload }) => {
+              if (!payload?.length) return null;
+              const d = payload[0]?.payload;
+              return (
+                <div
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "6px",
+                    padding: "8px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <div>
+                    <b>X:</b> {d?.x}
+                  </div>
+                  <div>
+                    <b>Y:</b> {d?.y}
+                  </div>
+                  <div>
+                    <b>Size:</b> {d?.size}
+                  </div>
+                  {d?.group && (
+                    <div>
+                      <b>Group:</b> {d.group}
+                    </div>
+                  )}
+                </div>
+              );
+            }}
+          />
+          <Legend />
+          {groups.map((g, gi) => (
+            <Scatter
+              key={g}
+              name={g}
+              data={data.filter((d) => d.group === g)}
+              fill={PALETTE[gi % PALETTE.length]}
+              shape={(props: {
+                cx?: number;
+                cy?: number;
+                payload?: { size?: number };
+              }) => {
+                const { cx = 0, cy = 0, payload } = props;
+                const r = 4 + ((payload?.size ?? 10) / maxSize) * 28;
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={r}
+                    fill={PALETTE[gi % PALETTE.length]}
+                    fillOpacity={0.7}
+                    stroke={PALETTE[gi % PALETTE.length]}
+                    strokeWidth={1}
+                  />
+                );
+              }}
+            />
+          ))}
+        </ScatterChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function ManhattanPlotRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  const data = rows
+    .map((r) => {
+      const chr = r.chromosome ?? r.chr ?? r.CHR ?? "1";
+      const pos = Number(r.position ?? r.pos ?? r.POS ?? 0);
+      const pval = Number(r.pvalue ?? r.p ?? r.PVALUE ?? r.P ?? 1);
+      return { chr, pos, pval, negLogP: pval > 0 ? -Math.log10(pval) : 0 };
+    })
+    .filter((d) => !Number.isNaN(d.pos) && !Number.isNaN(d.negLogP));
+  if (!data.length) return <EmptyChart />;
+  const chrList = [...new Set(data.map((d) => d.chr))].sort((a, b) => {
+    const na = Number.parseInt(a);
+    const nb = Number.parseInt(b);
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+    return a.localeCompare(b);
+  });
+  const scatterData = data.map((d) => ({
+    x: d.pos,
+    y: d.negLogP,
+    chr: d.chr,
+    chrIdx: chrList.indexOf(d.chr),
+  }));
+  const gwLine = -Math.log10(5e-8);
+  const sugLine = -Math.log10(1e-5);
+  return (
+    <div style={{ background: "white", padding: "16px", borderRadius: "8px" }}>
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <ResponsiveContainer width="100%" height={380}>
+        <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 50 }}>
+          <CartesianGrid stroke="#e2e8f0" />
+          <XAxis
+            dataKey="x"
+            name={params.xLabel || "Position"}
+            label={{
+              value: params.xLabel || "Genomic Position",
+              position: "insideBottom",
+              offset: -10,
+              fontSize: 12,
+            }}
+            fontSize={12}
+          />
+          <YAxis
+            dataKey="y"
+            name="-log10(p)"
+            label={{
+              value: params.yLabel || "-log10(p-value)",
+              angle: -90,
+              position: "insideLeft",
+              fontSize: 12,
+            }}
+            fontSize={12}
+          />
+          <ReferenceLine
+            y={gwLine}
+            stroke="#ef4444"
+            strokeDasharray="4 2"
+            label={{ value: "GW sig", fill: "#ef4444", fontSize: 10 }}
+          />
+          <ReferenceLine
+            y={sugLine}
+            stroke="#f97316"
+            strokeDasharray="4 2"
+            label={{ value: "Suggestive", fill: "#f97316", fontSize: 10 }}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "#fff",
+              border: "1px solid #e2e8f0",
+              borderRadius: "6px",
+              fontSize: "12px",
+            }}
+            content={({ payload }) => {
+              if (!payload?.length) return null;
+              const d = payload[0]?.payload;
+              return (
+                <div
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "6px",
+                    padding: "8px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <div>
+                    <b>Chr:</b> {d?.chr}
+                  </div>
+                  <div>
+                    <b>Pos:</b> {d?.x?.toLocaleString()}
+                  </div>
+                  <div>
+                    <b>-log10(p):</b> {d?.y?.toFixed(3)}
+                  </div>
+                </div>
+              );
+            }}
+          />
+          {chrList.map((chr, ci) => (
+            <Scatter
+              key={chr}
+              name={`Chr ${chr}`}
+              data={scatterData.filter((d) => d.chr === chr)}
+              fill={PALETTE[ci % PALETTE.length]}
+            />
+          ))}
+        </ScatterChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function DotPlotRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  if (!rows.length) return <EmptyChart />;
+  const genes = [...new Set(rows.map((r) => r.gene ?? r.Gene ?? ""))].filter(
+    Boolean,
+  );
+  const conditions = [
+    ...new Set(rows.map((r) => r.condition ?? r.Condition ?? "")),
+  ].filter(Boolean);
+  const lookup: Record<string, { avg: number; pct: number }> = {};
+  for (const r of rows) {
+    const g = r.gene ?? r.Gene ?? "";
+    const c = r.condition ?? r.Condition ?? "";
+    const avg = Number(r.avg_exp ?? r.avgExp ?? r.expression ?? 0);
+    const pct = Number(r.pct_exp ?? r.pctExp ?? r.percent ?? 50);
+    lookup[`${g}__${c}`] = { avg, pct };
+  }
+  const allAvg = rows
+    .map((r) => Number(r.avg_exp ?? r.avgExp ?? r.expression ?? 0))
+    .filter((v) => !Number.isNaN(v));
+  const minAvg = Math.min(...allAvg);
+  const maxAvg = Math.max(...allAvg);
+  const padL = 80;
+  const padT = 50;
+  const padR = 30;
+  const padB = 80;
+  const cellW = Math.max(
+    50,
+    Math.min(80, (600 - padL - padR) / conditions.length),
+  );
+  const cellH = Math.max(40, Math.min(60, (400 - padT - padB) / genes.length));
+  const svgW = padL + conditions.length * cellW + padR;
+  const svgH = padT + genes.length * cellH + padB;
+  function interpolateColor(t: number) {
+    const r = Math.round(220 - t * 170);
+    const g = Math.round(235 - t * 130);
+    const b = Math.round(255 - t * 80);
+    return `rgb(${r},${g},${b})`;
+  }
+  return (
+    <div
+      style={{
+        background: "white",
+        padding: "16px",
+        borderRadius: "8px",
+        overflowX: "auto",
+      }}
+    >
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <svg width={svgW} height={svgH} role="img" aria-label="chart">
+        {conditions.map((cond, ci) => (
+          <text
+            key={cond}
+            x={padL + ci * cellW + cellW / 2}
+            y={padT - 10}
+            textAnchor="middle"
+            fontSize={11}
+            fill="#374151"
+            transform={`rotate(-30, ${padL + ci * cellW + cellW / 2}, ${padT - 10})`}
+          >
+            {cond}
+          </text>
+        ))}
+        {genes.map((gene, gi) => (
+          <text
+            key={gene}
+            x={padL - 8}
+            y={padT + gi * cellH + cellH / 2 + 4}
+            textAnchor="end"
+            fontSize={11}
+            fill="#374151"
+          >
+            {gene}
+          </text>
+        ))}
+        {genes.map((gene, gi) =>
+          conditions.map((cond, ci) => {
+            const d = lookup[`${gene}__${cond}`] ?? { avg: 0, pct: 0 };
+            const t =
+              maxAvg > minAvg ? (d.avg - minAvg) / (maxAvg - minAvg) : 0.5;
+            const maxR = Math.min(cellW, cellH) / 2 - 4;
+            const r = (d.pct / 100) * maxR;
+            return (
+              <g key={`${gene}-${cond}`}>
+                <circle
+                  cx={padL + ci * cellW + cellW / 2}
+                  cy={padT + gi * cellH + cellH / 2}
+                  r={Math.max(2, r)}
+                  fill={interpolateColor(t)}
+                  stroke="#94a3b8"
+                  strokeWidth={0.5}
+                />
+              </g>
+            );
+          }),
+        )}
+        <text
+          x={padL + (conditions.length * cellW) / 2}
+          y={svgH - 10}
+          textAnchor="middle"
+          fontSize={11}
+          fill="#374151"
+        >
+          {params.xLabel || "Condition"}
+        </text>
+        <text
+          x={-svgH / 2}
+          y={15}
+          textAnchor="middle"
+          fontSize={11}
+          fill="#374151"
+          transform="rotate(-90)"
+        >
+          {params.yLabel || "Gene"}
+        </text>
+        <g transform={`translate(${svgW - padR - 80}, ${padT})`}>
+          <text fontSize={10} fill="#374151" y={-5}>
+            % Expressed
+          </text>
+          {[25, 50, 75, 100].map((pct, i) => {
+            const r = (pct / 100) * 12;
+            return (
+              <g key={pct} transform={`translate(${i * 22}, 16)`}>
+                <circle
+                  r={r}
+                  fill="#93c5fd"
+                  stroke="#94a3b8"
+                  strokeWidth={0.5}
+                />
+                <text y={20} textAnchor="middle" fontSize={8} fill="#374151">
+                  {pct}%
+                </text>
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function VennDiagramRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  if (!rows.length) return <EmptyChart />;
+  const setRows = rows.filter((r) => !(r.set ?? "").includes(","));
+  const interRows = rows.filter((r) => (r.set ?? "").includes(","));
+  const sets = setRows.map((r) => ({
+    name: r.set ?? "",
+    size: Number(r.size ?? 0),
+  }));
+  if (sets.length < 2) return <EmptyChart />;
+  function getIntersection(names: string[]) {
+    const key = names.sort().join(",");
+    const row = interRows.find((r) => {
+      const parts = (r.set ?? "")
+        .split(",")
+        .map((s: string) => s.trim())
+        .sort()
+        .join(",");
+      return parts === key;
+    });
+    return row ? Number(row.size ?? 0) : 0;
+  }
+  const W = 480;
+  const H = 360;
+  const cx = W / 2;
+  const cy = H / 2;
+  if (sets.length === 2) {
+    const r = 110;
+    const ox = 55;
+    const [A, B] = sets;
+    const ab = getIntersection([A.name, B.name]);
+    return (
+      <div
+        style={{ background: "white", padding: "16px", borderRadius: "8px" }}
+      >
+        {params.title && (
+          <div className="text-center font-semibold mb-2 text-gray-800">
+            {params.title}
+          </div>
+        )}
+        <svg width={W} height={H} role="img" aria-label="chart">
+          <circle
+            cx={cx - ox}
+            cy={cy}
+            r={r}
+            fill={PALETTE[0]}
+            fillOpacity={0.35}
+            stroke={PALETTE[0]}
+            strokeWidth={2}
+          />
+          <circle
+            cx={cx + ox}
+            cy={cy}
+            r={r}
+            fill={PALETTE[1]}
+            fillOpacity={0.35}
+            stroke={PALETTE[1]}
+            strokeWidth={2}
+          />
+          <text
+            x={cx - ox - 40}
+            y={cy + 5}
+            textAnchor="middle"
+            fontSize={14}
+            fill="#111"
+          >
+            {A.size}
+          </text>
+          <text x={cx} y={cy + 5} textAnchor="middle" fontSize={13} fill="#111">
+            {ab}
+          </text>
+          <text
+            x={cx + ox + 40}
+            y={cy + 5}
+            textAnchor="middle"
+            fontSize={14}
+            fill="#111"
+          >
+            {B.size}
+          </text>
+          <text
+            x={cx - ox - 40}
+            y={cy + 130}
+            textAnchor="middle"
+            fontSize={13}
+            fontWeight="bold"
+            fill={PALETTE[0]}
+          >
+            {A.name}
+          </text>
+          <text
+            x={cx + ox + 40}
+            y={cy + 130}
+            textAnchor="middle"
+            fontSize={13}
+            fontWeight="bold"
+            fill={PALETTE[1]}
+          >
+            {B.name}
+          </text>
+        </svg>
+      </div>
+    );
+  }
+  const [A, B, C] = sets;
+  const r = 95;
+  const dy = 30;
+  const posA = { x: cx, y: cy - 60 };
+  const posB = { x: cx - 70, y: cy + 50 };
+  const posC = { x: cx + 70, y: cy + 50 };
+  const ab = getIntersection([A.name, B.name]);
+  const ac = getIntersection([A.name, C.name]);
+  const bc = getIntersection([B.name, C.name]);
+  const abc = getIntersection([A.name, B.name, C.name]);
+  return (
+    <div style={{ background: "white", padding: "16px", borderRadius: "8px" }}>
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <svg width={W} height={H} role="img" aria-label="chart">
+        <circle
+          cx={posA.x}
+          cy={posA.y}
+          r={r}
+          fill={PALETTE[0]}
+          fillOpacity={0.3}
+          stroke={PALETTE[0]}
+          strokeWidth={2}
+        />
+        <circle
+          cx={posB.x}
+          cy={posB.y}
+          r={r}
+          fill={PALETTE[1]}
+          fillOpacity={0.3}
+          stroke={PALETTE[1]}
+          strokeWidth={2}
+        />
+        <circle
+          cx={posC.x}
+          cy={posC.y}
+          r={r}
+          fill={PALETTE[2]}
+          fillOpacity={0.3}
+          stroke={PALETTE[2]}
+          strokeWidth={2}
+        />
+        <text
+          x={posA.x}
+          y={posA.y - r - 8}
+          textAnchor="middle"
+          fontSize={13}
+          fontWeight="bold"
+          fill={PALETTE[0]}
+        >
+          {A.name}
+        </text>
+        <text
+          x={posB.x - r - 8}
+          y={posB.y}
+          textAnchor="end"
+          fontSize={13}
+          fontWeight="bold"
+          fill={PALETTE[1]}
+        >
+          {B.name}
+        </text>
+        <text
+          x={posC.x + r + 8}
+          y={posC.y}
+          textAnchor="start"
+          fontSize={13}
+          fontWeight="bold"
+          fill={PALETTE[2]}
+        >
+          {C.name}
+        </text>
+        <text
+          x={posA.x}
+          y={posA.y - 20}
+          textAnchor="middle"
+          fontSize={12}
+          fill="#111"
+        >
+          {A.size}
+        </text>
+        <text
+          x={posB.x - 25}
+          y={posB.y + 25}
+          textAnchor="middle"
+          fontSize={12}
+          fill="#111"
+        >
+          {B.size}
+        </text>
+        <text
+          x={posC.x + 25}
+          y={posC.y + 25}
+          textAnchor="middle"
+          fontSize={12}
+          fill="#111"
+        >
+          {C.size}
+        </text>
+        <text
+          x={(posA.x + posB.x) / 2 - 5}
+          y={(posA.y + posB.y) / 2 + dy}
+          textAnchor="middle"
+          fontSize={11}
+          fill="#333"
+        >
+          {ab}
+        </text>
+        <text
+          x={(posA.x + posC.x) / 2 + 5}
+          y={(posA.y + posC.y) / 2 + dy}
+          textAnchor="middle"
+          fontSize={11}
+          fill="#333"
+        >
+          {ac}
+        </text>
+        <text
+          x={(posB.x + posC.x) / 2}
+          y={(posB.y + posC.y) / 2}
+          textAnchor="middle"
+          fontSize={11}
+          fill="#333"
+        >
+          {bc}
+        </text>
+        <text
+          x={cx}
+          y={cy + 20}
+          textAnchor="middle"
+          fontSize={12}
+          fontWeight="bold"
+          fill="#111"
+        >
+          {abc}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function UpsetPlotRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  if (!rows.length) return <EmptyChart />;
+  const setRows = rows.filter((r) => !(r.set ?? "").includes(","));
+  const setNames = setRows.map((r) => r.set ?? "").filter(Boolean);
+  if (!setNames.length) return <EmptyChart />;
+  const intersections = rows
+    .map((r) => ({
+      sets: (r.set ?? "")
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter(Boolean),
+      size: Number(r.size ?? 0),
+    }))
+    .filter((d) => d.size > 0)
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 10);
+  const maxSize = Math.max(...intersections.map((d) => d.size));
+  const setBarMax = Math.max(...setRows.map((r) => Number(r.size ?? 0)));
+  const dotR = 10;
+  const colW = 55;
+  const rowH = 35;
+  const topBarH = 150;
+  const leftW = 100;
+  const padTop = 20;
+  const svgW = leftW + intersections.length * colW + 40;
+  const svgH = padTop + topBarH + setNames.length * rowH + 40;
+  return (
+    <div
+      style={{
+        background: "white",
+        padding: "16px",
+        borderRadius: "8px",
+        overflowX: "auto",
+      }}
+    >
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <svg width={svgW} height={svgH} role="img" aria-label="chart">
+        {intersections.map((inter, ci) => {
+          const barH =
+            maxSize > 0 ? (inter.size / maxSize) * (topBarH - 30) : 0;
+          const bx = leftW + ci * colW + colW / 2;
+          return (
+            <g key={`inter-${inter.sets.join("-")}`}>
+              <rect
+                x={bx - 12}
+                y={padTop + topBarH - barH - 20}
+                width={24}
+                height={barH}
+                fill={PALETTE[0]}
+                rx={2}
+              />
+              <text
+                x={bx}
+                y={padTop + topBarH - barH - 24}
+                textAnchor="middle"
+                fontSize={10}
+                fill="#374151"
+              >
+                {inter.size}
+              </text>
+            </g>
+          );
+        })}
+        {setNames.map((sn, si) => {
+          const barW =
+            setBarMax > 0
+              ? (Number(setRows.find((r) => r.set === sn)?.size ?? 0) /
+                  setBarMax) *
+                (leftW - 20)
+              : 0;
+          const sy = padTop + topBarH + si * rowH + rowH / 2;
+          return (
+            <g key={sn}>
+              <text
+                x={leftW - barW - 6}
+                y={sy + 4}
+                textAnchor="end"
+                fontSize={10}
+                fill="#374151"
+              >
+                {sn}
+              </text>
+              <rect
+                x={leftW - barW - 4}
+                y={sy - 7}
+                width={barW}
+                height={14}
+                fill={PALETTE[si % PALETTE.length]}
+                fillOpacity={0.5}
+                rx={2}
+              />
+              {intersections.map((inter, ci) => {
+                const active = inter.sets.includes(sn);
+                const bx = leftW + ci * colW + colW / 2;
+                return (
+                  <circle
+                    key={`upsetdot-${sn}-${inter.sets.join("-")}`}
+                    cx={bx}
+                    cy={sy}
+                    r={dotR}
+                    fill={active ? PALETTE[si % PALETTE.length] : "#e2e8f0"}
+                  />
+                );
+              })}
+              {intersections.map((inter, ci) => {
+                if (inter.sets.length < 2) return null;
+                const activeSets = inter.sets.filter((s) =>
+                  setNames.includes(s),
+                );
+                if (activeSets.length < 2) return null;
+                const firstIdx = setNames.indexOf(activeSets[0]);
+                const lastIdx = setNames.indexOf(
+                  activeSets[activeSets.length - 1],
+                );
+                if (firstIdx === si || lastIdx === si) return null;
+                if (si > firstIdx && si < lastIdx && activeSets.includes(sn)) {
+                  const bx = leftW + ci * colW + colW / 2;
+                  return (
+                    <line
+                      key={`upsetline-${sn}-${inter.sets.join("-")}`}
+                      x1={bx}
+                      y1={padTop + topBarH + firstIdx * rowH + rowH / 2}
+                      x2={bx}
+                      y2={padTop + topBarH + lastIdx * rowH + rowH / 2}
+                      stroke={PALETTE[0]}
+                      strokeWidth={3}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function PathwayMapRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  if (!rows.length) return <EmptyChart />;
+  const edges = rows
+    .map((r) => ({
+      source: r.source ?? r.from ?? "",
+      target: r.target ?? r.to ?? "",
+      weight: Number(r.weight ?? 1),
+    }))
+    .filter((e) => e.source && e.target);
+  const nodeNames = [
+    ...new Set([...edges.map((e) => e.source), ...edges.map((e) => e.target)]),
+  ];
+  if (!nodeNames.length) return <EmptyChart />;
+  const degree: Record<string, number> = {};
+  for (const e of edges) {
+    degree[e.source] = (degree[e.source] ?? 0) + 1;
+    degree[e.target] = (degree[e.target] ?? 0) + 1;
+  }
+  const W = 500;
+  const H = 400;
+  const cx = W / 2;
+  const cy = H / 2;
+  const r = 150;
+  const nodePos: Record<string, { x: number; y: number }> = {};
+  nodeNames.forEach((name, i) => {
+    const angle = (2 * Math.PI * i) / nodeNames.length - Math.PI / 2;
+    nodePos[name] = {
+      x: cx + r * Math.cos(angle),
+      y: cy + r * Math.sin(angle),
+    };
+  });
+  const color = params.color ?? PALETTE[0];
+  return (
+    <div style={{ background: "white", padding: "16px", borderRadius: "8px" }}>
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <svg width={W} height={H} role="img" aria-label="chart">
+        {edges.map((e) => {
+          const s = nodePos[e.source];
+          const t = nodePos[e.target];
+          if (!s || !t) return null;
+          return (
+            <line
+              key={`pathline-${e.source}-${e.target}`}
+              x1={s.x}
+              y1={s.y}
+              x2={t.x}
+              y2={t.y}
+              stroke="#94a3b8"
+              strokeWidth={Math.max(1, e.weight)}
+              strokeOpacity={0.6}
+            />
+          );
+        })}
+        {nodeNames.map((name) => {
+          const p = nodePos[name];
+          const d = degree[name] ?? 1;
+          const nr = 12 + d * 3;
+          return (
+            <g key={name}>
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={nr}
+                fill={color}
+                fillOpacity={0.8}
+                stroke={color}
+                strokeWidth={2}
+              />
+              <text
+                x={p.x}
+                y={p.y + 4}
+                textAnchor="middle"
+                fontSize={10}
+                fill="white"
+                fontWeight="bold"
+              >
+                {name.length > 6 ? `${name.slice(0, 6)}…` : name}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function CircosPlotRenderer({ csv, params }: RendererProps) {
+  const { rows } = parseCsv(csv);
+  if (!rows.length) return <EmptyChart />;
+  const chords = rows
+    .map((r) => ({
+      from: r.from ?? r.source ?? "",
+      to: r.to ?? r.target ?? "",
+      value: Number(r.value ?? r.weight ?? 1),
+    }))
+    .filter((c) => c.from && c.to && !Number.isNaN(c.value));
+  if (!chords.length) return <EmptyChart />;
+  const nodes = [
+    ...new Set([...chords.map((c) => c.from), ...chords.map((c) => c.to)]),
+  ];
+  const totals: Record<string, number> = {};
+  for (const c of chords) {
+    totals[c.from] = (totals[c.from] ?? 0) + c.value;
+    totals[c.to] = (totals[c.to] ?? 0) + c.value;
+  }
+  const total = Object.values(totals).reduce((a, b) => a + b, 0) / 2;
+  const W = 460;
+  const H = 460;
+  const cx = W / 2;
+  const cy = H / 2;
+  const outerR = 180;
+  const innerR = 160;
+  const gap = 0.04;
+  const arcAngles: Record<string, { start: number; end: number }> = {};
+  let angle = 0;
+  for (const node of nodes) {
+    const span =
+      ((totals[node] ?? 0) / (total * 2)) * (2 * Math.PI - nodes.length * gap);
+    arcAngles[node] = { start: angle, end: angle + span };
+    angle += span + gap;
+  }
+  function polarX(r: number, a: number) {
+    return cx + r * Math.cos(a - Math.PI / 2);
+  }
+  function polarY(r: number, a: number) {
+    return cy + r * Math.sin(a - Math.PI / 2);
+  }
+  function arcPath(r: number, start: number, end: number, inner: number) {
+    const x1 = polarX(r, start);
+    const y1 = polarY(r, start);
+    const x2 = polarX(r, end);
+    const y2 = polarY(r, end);
+    const xi1 = polarX(inner, end);
+    const yi1 = polarY(inner, end);
+    const xi2 = polarX(inner, start);
+    const yi2 = polarY(inner, start);
+    const large = end - start > Math.PI ? 1 : 0;
+    return `M${x1},${y1} A${r},${r},0,${large},1,${x2},${y2} L${xi1},${yi1} A${inner},${inner},0,${large},0,${xi2},${yi2} Z`;
+  }
+  const fromAngles: Record<string, number> = {};
+  for (const node of nodes) fromAngles[node] = arcAngles[node]?.start ?? 0;
+  return (
+    <div style={{ background: "white", padding: "16px", borderRadius: "8px" }}>
+      {params.title && (
+        <div className="text-center font-semibold mb-2 text-gray-800">
+          {params.title}
+        </div>
+      )}
+      <svg width={W} height={H} role="img" aria-label="chart">
+        {nodes.map((node, ni) => {
+          const { start, end } = arcAngles[node];
+          const midA = (start + end) / 2;
+          const labelR = outerR + 18;
+          return (
+            <g key={node}>
+              <path
+                d={arcPath(outerR, start, end, innerR)}
+                fill={PALETTE[ni % PALETTE.length]}
+              />
+              <text
+                x={polarX(labelR, midA)}
+                y={polarY(labelR, midA) + 4}
+                textAnchor="middle"
+                fontSize={11}
+                fill="#374151"
+              >
+                {node}
+              </text>
+            </g>
+          );
+        })}
+        {chords.map((chord) => {
+          const fromArc = arcAngles[chord.from];
+          const toArc = arcAngles[chord.to];
+          if (!fromArc || !toArc) return null;
+          const fromSpan =
+            (chord.value / (totals[chord.from] ?? 1)) *
+            (fromArc.end - fromArc.start);
+          const toSpan =
+            (chord.value / (totals[chord.to] ?? 1)) * (toArc.end - toArc.start);
+          const fa = fromAngles[chord.from] ?? fromArc.start;
+          const ta = fromAngles[chord.to] ?? toArc.start;
+          fromAngles[chord.from] = fa + fromSpan;
+          fromAngles[chord.to] = ta + toSpan;
+          const x1 = polarX(innerR, fa);
+          const y1 = polarY(innerR, fa);
+          const x2 = polarX(innerR, fa + fromSpan);
+          const y2 = polarY(innerR, fa + fromSpan);
+          const x3 = polarX(innerR, ta);
+          const y3 = polarY(innerR, ta);
+          const x4 = polarX(innerR, ta + toSpan);
+          const y4 = polarY(innerR, ta + toSpan);
+          const path = `M${x1},${y1} Q${cx},${cy} ${x3},${y3} A${innerR},${innerR},0,0,1,${x4},${y4} Q${cx},${cy} ${x2},${y2} A${innerR},${innerR},0,0,0,${x1},${y1} Z`;
+          const fromNode = nodes.indexOf(chord.from);
+          return (
+            <path
+              key={`chord-${chord.from}-${chord.to}`}
+              d={path}
+              fill={PALETTE[fromNode % PALETTE.length]}
+              fillOpacity={0.45}
+              stroke="white"
+              strokeWidth={0.5}
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 function EmptyChart() {
   return (
     <div className="h-64 flex items-center justify-center text-muted-foreground text-sm">
@@ -1380,6 +2365,13 @@ export function getRenderer(toolId: string): React.FC<RendererProps> {
     "roc-curve": RocCurveRenderer,
     "waterfall-plot": WaterfallPlotRenderer,
     "forest-plot": ForestPlotRenderer,
+    "bubble-chart": BubbleChartRenderer,
+    "manhattan-plot": ManhattanPlotRenderer,
+    dotplot: DotPlotRenderer,
+    "venn-diagram": VennDiagramRenderer,
+    "upset-plot": UpsetPlotRenderer,
+    "pathway-map": PathwayMapRenderer,
+    "circos-plot": CircosPlotRenderer,
   };
   return map[toolId] || (() => <ComingSoonRenderer toolName={toolId} />);
 }

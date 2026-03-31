@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Activity,
+  BarChart2,
   Brain,
   ChevronLeft,
   ChevronRight,
@@ -712,6 +713,66 @@ export default function QuestionnairePage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    {/* Score Overview Chart */}
+                    <div className="p-4 rounded-lg border border-border bg-secondary/20">
+                      <div className="flex items-center gap-2 mb-4">
+                        <BarChart2 className="w-4 h-4 text-accent" />
+                        <span className="font-semibold text-sm">
+                          Score Overview
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {responses.length} submission
+                          {responses.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      {(() => {
+                        const avgKnowledge =
+                          responses.reduce(
+                            (s, r) => s + Number(r.knowledgeScore),
+                            0,
+                          ) / responses.length;
+                        const avgAttitude =
+                          responses.reduce(
+                            (s, r) => s + Number(r.attitudeScore),
+                            0,
+                          ) / responses.length;
+                        const avgAdherence =
+                          responses.reduce(
+                            (s, r) => s + Number(r.adherenceScore),
+                            0,
+                          ) / responses.length;
+                        const bars = [
+                          { label: "Knowledge", value: avgKnowledge, max: 4 },
+                          { label: "Attitudes", value: avgAttitude, max: 3 },
+                          { label: "Adherence", value: avgAdherence, max: 3 },
+                        ];
+                        return (
+                          <div className="space-y-3">
+                            {bars.map((b) => (
+                              <div
+                                key={b.label}
+                                className="flex items-center gap-3"
+                              >
+                                <span className="text-xs w-20 text-muted-foreground shrink-0">
+                                  {b.label}
+                                </span>
+                                <div className="flex-1 bg-border rounded-full h-4 overflow-hidden">
+                                  <div
+                                    className="h-full bg-accent rounded-full transition-all"
+                                    style={{
+                                      width: `${Math.round((b.value / b.max) * 100)}%`,
+                                    }}
+                                  />
+                                </div>
+                                <span className="text-xs font-mono w-12 text-right text-foreground">
+                                  {b.value.toFixed(1)}/{b.max}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
                     {responses.map((r, i) => {
                       const overall = Number(r.overallScore);
                       const pct = Math.round((overall / 10) * 100);
